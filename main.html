@@ -1,0 +1,691 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMI-LA Project Management Challenge Roadmap</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #000000;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f17ab 0%, #ff610f 100%);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(79, 23, 171, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navigation {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: #05bfe0;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn:hover {
+            background: #4f17ab;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: #ff610f;
+        }
+
+        .content-section {
+            display: none;
+            padding: 2rem 0;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-left: 5px solid #ff610f;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: #4f17ab;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .card h3 {
+            color: #ff610f;
+            margin: 1.5rem 0 1rem 0;
+            font-size: 1.3rem;
+        }
+
+        .timeline {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .timeline-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid #05bfe0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item h4 {
+            color: #4f17ab;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-item .date {
+            color: #ff610f;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .network-diagram {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        .diagram-container {
+            position: relative;
+            min-width: 1200px;
+            height: 600px;
+            margin: 0 auto;
+        }
+
+        .activity-box {
+            position: absolute;
+            width: 120px;
+            height: 80px;
+            border: 2px solid #4f17ab;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .activity-box:hover {
+            border-color: #ff610f;
+            transform: scale(1.05);
+        }
+
+        .activity-box.critical {
+            border-color: #ff610f;
+            background: #fff5f2;
+        }
+
+        .activity-id {
+            color: #4f17ab;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+
+        .activity-name {
+            color: #000000;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+        }
+
+        .activity-duration {
+            color: #05bfe0;
+            font-size: 0.7rem;
+        }
+
+        .arrow {
+            position: absolute;
+            height: 2px;
+            background: #05bfe0;
+            transform-origin: left;
+        }
+
+        .arrow::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: -3px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid #05bfe0;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        .arrow.critical {
+            background: #ff610f;
+        }
+
+        .arrow.critical::after {
+            border-left-color: #ff610f;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 4px solid #05bfe0;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff610f;
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            color: #4f17ab;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: #4f17ab;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: none;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>PMI-LA Project Management Challenge</h1>
+            <p>Interactive Roadmap & Network Analysis | Oct 25, 2025 PDD</p>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <div class="container">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('executive')">Executive Summary</button>
+                <button class="nav-btn" onclick="showSection('timeline')">Strategic Timeline</button>
+                <button class="nav-btn" onclick="showSection('network')">Network Diagram</button>
+                <button class="nav-btn" onclick="showSection('critical')">Critical Path</button>
+                <button class="nav-btn" onclick="showSection('metrics')">Success Metrics</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Executive Summary Section -->
+        <div id="executive" class="content-section active">
+            <div class="card">
+                <h2>Executive Summary</h2>
+                <p><strong>Project:</strong> PMI-LA Summer Case Competition Challenge</p>
+                <p><strong>Timeline:</strong> August 5, 2025 - October 25, 2025 (12 weeks total)</p>
+                <p><strong>Culmination:</strong> Professional Development Day (PDD) Final Presentations</p>
+                
+                <h3>Project Overview</h3>
+                <p>The PMI-LA Project Management Challenge is a comprehensive 12-week initiative designed to engage project management professionals and students in a real-world case competition. The challenge combines academic rigor with practical application, culminating in final presentations at the October 25, 2025 Professional Development Day.</p>
+                
+                <h3>Key Objectives</h3>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li>Enhance PMI-LA's visibility and member engagement</li>
+                    <li>Strengthen partnerships with UCLA and USC</li>
+                    <li>Provide hands-on PM experience through case study methodology</li>
+                    <li>Create networking opportunities for participants</li>
+                    <li>Showcase innovative project management solutions</li>
+                </ul>
+                
+                <h3>Critical Success Factors</h3>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li>Timely completion of all project phases</li>
+                    <li>Quality engagement from academic partners</li>
+                    <li>Effective marketing and registration campaign</li>
+                    <li>Seamless technology platform implementation</li>
+                    <li>Professional presentation venue and logistics</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Strategic Timeline Section -->
+        <div id="timeline" class="content-section">
+            <div class="card">
+                <h2>Strategic Project Timeline</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Phase 1: Project Initiation & Planning</h4>
+                        <div class="date">August 5 - August 18, 2025</div>
+                        <p>Project charter development, stakeholder alignment, resource allocation, and initial content creation.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Phase 2: Content Development & Platform Build</h4>
+                        <div class="date">August 19 - September 1, 2025</div>
+                        <p>Case study content creation, website development, assessment criteria finalization, and quality assurance testing.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Phase 3: Marketing & Registration Campaign</h4>
+                        <div class="date">August 5 - September 4, 2025</div>
+                        <p>Marketing material creation, social media campaign launch, partner outreach, and participant registration management.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Phase 4: Challenge Execution</h4>
+                        <div class="date">September 5 - October 11, 2025</div>
+                        <p>Live challenge monitoring, participant support, weekly progress tracking, and community engagement via Discord.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Phase 5: Evaluation & PDD Event</h4>
+                        <div class="date">October 12 - October 25, 2025</div>
+                        <p>Submission review, finalist selection, presentation preparation, and final PDD event execution.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network Diagram Section -->
+        <div id="network" class="content-section">
+            <div class="card">
+                <h2>Project Schedule Network Diagram</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #fff5f2; border: 2px solid #ff610f;"></div>
+                        <span>Critical Path Activities</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: white; border: 2px solid #4f17ab;"></div>
+                        <span>Non-Critical Activities</span>
+                    </div>
+                </div>
+                
+                <div class="network-diagram">
+                    <div class="diagram-container" id="networkContainer">
+                        <!-- Activities will be positioned here -->
+                    </div>
+                </div>
+                
+                <div class="tooltip" id="tooltip"></div>
+            </div>
+        </div>
+
+        <!-- Critical Path Section -->
+        <div id="critical" class="content-section">
+            <div class="card">
+                <h2>Critical Path Analysis & Buffer Management</h2>
+                
+                <h3>Critical Path Activities</h3>
+                <p>The critical path represents the longest sequence of activities that determines the minimum project duration. Any delay in critical path activities will delay the entire project.</p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>A → B → D → F → I → J → K → L</h4>
+                        <div class="date">Total Duration: 81 Days</div>
+                        <p><strong>Critical Path Sequence:</strong> Project Charter → Content Development → Website Build → Platform Testing → Challenge Launch → Challenge Execution → Evaluation → PDD Event</p>
+                    </div>
+                </div>
+                
+                <h3>Float/Buffer Analysis</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">0</div>
+                        <div class="metric-label">Critical Path Float</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">5-7</div>
+                        <div class="metric-label">Marketing Activities Float (Days)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">3</div>
+                        <div class="metric-label">QA Testing Buffer (Days)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">2</div>
+                        <div class="metric-label">Presentation Prep Buffer (Days)</div>
+                    </div>
+                </div>
+                
+                <h3>Risk Mitigation Strategies</h3>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li><strong>Content Development Risk:</strong> Maintain 3-day buffer for unexpected content revisions</li>
+                    <li><strong>Technology Risk:</strong> Parallel development and testing streams to minimize delays</li>
+                    <li><strong>Partner Coordination Risk:</strong> Weekly check-ins with UCLA and USC stakeholders</li>
+                    <li><strong>Registration Risk:</strong> Early marketing start with 30-day registration period</li>
+                    <li><strong>Venue Risk:</strong> Confirmed PDD venue booking with backup options</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Success Metrics Section -->
+        <div id="metrics" class="content-section">
+            <div class="card">
+                <h2>Project Performance & Success Metrics</h2>
+                
+                <h3>Quantitative Success Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value">75+</div>
+                        <div class="metric-label">Target Participants</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">90%</div>
+                        <div class="metric-label">Completion Rate</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">4.5/5</div>
+                        <div class="metric-label">Participant Satisfaction</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">25+</div>
+                        <div class="metric-label">New PMI-LA Members</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">95%</div>
+                        <div class="metric-label">On-Time Delivery</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">±5%</div>
+                        <div class="metric-label">Budget Variance</div>
+                    </div>
+                </div>
+                
+                <h3>Qualitative Success Indicators</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <h4>Stakeholder Engagement</h4>
+                        <p>Strong participation from UCLA and USC faculty, active Discord community engagement, positive feedback from academic partners.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Content Quality</h4>
+                        <p>Realistic case study scenarios, appropriate difficulty progression, clear deliverable expectations, professional presentation standards.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Brand Enhancement</h4>
+                        <p>Increased PMI-LA social media engagement, positive media coverage, enhanced reputation in PM community, strengthened academic partnerships.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <h4>Learning Outcomes</h4>
+                        <p>Demonstrated PM competency improvement, practical skill application, networking relationship building, career development impact.</p>
+                    </div>
+                </div>
+                
+                <h3>Performance Monitoring Framework</h3>
+                <ul style="margin: 1rem 0; padding-left: 2rem;">
+                    <li><strong>Weekly Progress Reports:</strong> Track registration, engagement, and deliverable submissions</li>
+                    <li><strong>Milestone Reviews:</strong> Gate reviews at each major phase completion</li>
+                    <li><strong>Risk Dashboard:</strong> Real-time monitoring of critical path activities</li>
+                    <li><strong>Stakeholder Feedback:</strong> Regular pulse surveys and partner check-ins</li>
+                    <li><strong>Quality Assurance:</strong> Continuous content and platform testing</li>
+                    <li><strong>Post-Event Analysis:</strong> Comprehensive lessons learned and ROI assessment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functionality
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+            
+            // Initialize network diagram if showing network section
+            if (sectionId === 'network') {
+                setTimeout(initializeNetworkDiagram, 100);
+            }
+        }
+
+        // Network Diagram Data
+        const activities = [
+            {id: 'A', name: 'Project Charter', duration: 5, x: 50, y: 100, critical: true, 
+             tooltip: 'Project Charter Development\nDuration: 5 days\nCritical Path Activity'},
+            {id: 'B', name: 'Content Dev', duration: 14, x: 200, y: 100, critical: true,
+             tooltip: 'Case Study Content Development\nDuration: 14 days\nCritical Path Activity'},
+            {id: 'C', name: 'Marketing Plan', duration: 7, x: 200, y: 200, critical: false,
+             tooltip: 'Marketing Strategy Development\nDuration: 7 days\nFloat: 5 days'},
+            {id: 'D', name: 'Website Build', duration: 10, x: 350, y: 100, critical: true,
+             tooltip: 'Website Development & Setup\nDuration: 10 days\nCritical Path Activity'},
+            {id: 'E', name: 'Marketing Exec', duration: 30, x: 350, y: 200, critical: false,
+             tooltip: 'Marketing Campaign Execution\nDuration: 30 days\nFloat: 7 days'},
+            {id: 'F', name: 'Platform Test', duration: 5, x: 500, y: 100, critical: true,
+             tooltip: 'Platform Testing & QA\nDuration: 5 days\nCritical Path Activity'},
+            {id: 'G', name: 'Registration', duration: 30, x: 500, y: 200, critical: false,
+             tooltip: 'Participant Registration\nDuration: 30 days\nFloat: 5 days'},
+            {id: 'H', name: 'Discord Setup', duration: 3, x: 650, y: 300, critical: false,
+             tooltip: 'Community Discord Setup\nDuration: 3 days\nFloat: 10 days'},
+            {id: 'I', name: 'Challenge Launch', duration: 1, x: 650, y: 100, critical: true,
+             tooltip: 'Challenge Launch Event\nDuration: 1 day\nCritical Path Activity'},
+            {id: 'J', name: 'Challenge Exec', duration: 37, x: 800, y: 100, critical: true,
+             tooltip: 'Challenge Execution Period\nDuration: 37 days\nCritical Path Activity'},
+            {id: 'K', name: 'Evaluation', duration: 7, x: 950, y: 100, critical: true,
+             tooltip: 'Submission Evaluation\nDuration: 7 days\nCritical Path Activity'},
+            {id: 'L', name: 'PDD Event', duration: 1, x: 1100, y: 100, critical: true,
+             tooltip: 'Professional Development Day\nDuration: 1 day\nCritical Path Activity'}
+        ];
+
+        const dependencies = [
+            {from: 'A', to: 'B', critical: true},
+            {from: 'A', to: 'C', critical: false},
+            {from: 'B', to: 'D', critical: true},
+            {from: 'C', to: 'E', critical: false},
+            {from: 'D', to: 'F', critical: true},
+            {from: 'D', to: 'G', critical: false},
+            {from: 'F', to: 'I', critical: true},
+            {from: 'F', to: 'H', critical: false},
+            {from: 'G', to: 'I', critical: false},
+            {from: 'I', to: 'J', critical: true},
+            {from: 'J', to: 'K', critical: true},
+            {from: 'K', to: 'L', critical: true}
+        ];
+
+        function initializeNetworkDiagram() {
+            const container = document.getElementById('networkContainer');
+            if (!container) return;
+            
+            // Clear existing content
+            container.innerHTML = '';
+
+            // Create activity boxes
+            activities.forEach(activity => {
+                const box = document.createElement('div');
+                box.className = `activity-box ${activity.critical ? 'critical' : ''}`;
+                box.style.left = activity.x + 'px';
+                box.style.top = activity.y + 'px';
+                
+                box.innerHTML = `
+                    <div class="activity-id">${activity.id}</div>
+                    <div class="activity-name">${activity.name}</div>
+                    <div class="activity-duration">${activity.duration}d</div>
+                `;
+                
+                // Add tooltip functionality
+                box.addEventListener('mouseenter', (e) => showTooltip(e, activity.tooltip));
+                box.addEventListener('mouseleave', hideTooltip);
+                
+                container.appendChild(box);
+            });
+
+            // Create arrows for dependencies
+            dependencies.forEach(dep => {
+                const fromActivity = activities.find(a => a.id === dep.from);
+                const toActivity = activities.find(a => a.id === dep.to);
+                
+                if (fromActivity && toActivity) {
+                    const arrow = createArrow(fromActivity, toActivity, dep.critical);
+                    container.appendChild(arrow);
+                }
+            });
+        }
+
+        function createArrow(from, to, critical) {
+            const arrow = document.createElement('div');
+            arrow.className = `arrow ${critical ? 'critical' : ''}`;
+            
+            const fromX = from.x + 120; // Right edge of from box
+            const fromY = from.y + 40;  // Center of from box
+            const toX = to.x;           // Left edge of to box
+            const toY = to.y + 40;      // Center of to box
+            
+            const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+            const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+            
+            arrow.style.left = fromX + 'px';
+            arrow.style.top = fromY + 'px';
+            arrow.style.width = length + 'px';
+            arrow.style.transform = `rotate(${angle}deg)`;
+            
+            return arrow;
+        }
+
+        function showTooltip(event, text) {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.innerHTML = text.replace(/\n/g, '<br>');
+            tooltip.style.display = 'block';
+            tooltip.style.left = event.pageX + 10 + 'px';
+            tooltip.style.top = event.pageY - 10 + 'px';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Network diagram will be initialized when that section is first shown
+        });
+    </script>
+</body>
+</html>
